@@ -1,24 +1,20 @@
-import React, { Component, Fragment } from "react";
+import React, { useEffect, useContext, Fragment } from "react";
 import Spinner from "../layout/Spinner";
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Repos from "../repos/Repos";
+import GithubContext from "../../context/github/githubContext";
 
-class User extends Component {
-  componentDidMount() {
-    this.props.getUser(this.props.match.params.login);
-    this.props.getUserRepos(this.props.match.params.login);
-  }
+const User = ({match}) => {
 
-  static propTypes = {
-    loading: PropTypes.bool,
-    user: PropTypes.object.isRequired,
-    getUser: PropTypes.func.isRequired,
-    getUserRepos: PropTypes.func.isRequired,
-    repos: PropTypes.array.isRequired,
-  };
+  const githubContext = useContext(GithubContext)
 
-  render() {
+  const {getUser, loading, user, getUserRepos, repos} = githubContext;
+
+  useEffect(() => {
+    getUser(match.params.login);
+    getUserRepos(match.params.login);
+  },[])
+
     const {
       name,
       avatar_url,
@@ -33,9 +29,7 @@ class User extends Component {
       public_repos,
       public_gists,
       hireable,
-    } = this.props.user;
-
-    const { loading, repos } = this.props;
+    } = user;
 
     if (loading) return <Spinner />;
     return (
@@ -84,11 +78,11 @@ class User extends Component {
                     <strong>Company: </strong> {company}
                   </Fragment>
                 )}
-              </li>
+              </li> 
               <li>
                 {blog && (
                   <Fragment>
-                    <strong>Website: </strong> {blog}
+                    <strong>Website: </strong>{blog} 
                   </Fragment>
                 )}
               </li>
@@ -104,7 +98,7 @@ class User extends Component {
         <Repos repos={repos} />
       </Fragment>
     );
-  }
 }
+
 
 export default User;
